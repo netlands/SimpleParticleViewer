@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="Simple Particle viewer">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Particle Viewer</title>
+    <script src="http://cdn.jsdelivr.net/sparkjs/0.5.10/spark.min.js" type="text/javascript" charset="utf-8"></script>
+    <!-- Material Design Lite -->
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.cyan-deep_orange.min.css" />
+    <!-- Material Design icon font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css" />
+    <style>
+        body {
+            font-family: Roboto;
+            overflow-y: hidden;
+        }
+        
+        button#spark-login-button.spark-login-button {
+            background: #46B6AC;
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            margin-left: -75px;
+        }
+        
+        button#spark-login-form-button {
+            background: darkgray;
+        }
+        
+        form#spark-login-form.spark-login-modal.current {
+            background: #46B6AC;
+        }
+        
+        kbd {
+            padding: .1em .6em;
+            border: 1px solid #ccc;
+            font-size: 11px;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            -moz-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px #fff inset;
+            -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px #fff inset;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px #fff inset;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 0 .1em;
+            text-shadow: 0 1px 0 #fff;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+        
+        .mdl-layout-title {
+            /* margin-left: -50px; */
+        }
+        
+        #data {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var USER = "name@domain.com";
+        var PASSWORD = "xxxxxxxxx";
+        var COREID = "1234567890";
+
+        function testChrome() {
+            // please note,
+            // that IE11 now returns undefined again for window.chrome
+            // and new Opera 30 outputs true for window.chrome
+            // so use the below updated condition
+            var isChromium = window.chrome,
+                vendorName = window.navigator.vendor,
+                isOpera = window.navigator.userAgent.indexOf("OPR") > -1;
+            if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false) {
+                // is Google chrome
+            } else {
+                // not Google chrome
+                document.getElementById("debug").style.display = "none";
+            }
+            document.getElementById("spark-login-button").click();
+        }
+    </script>
+</head>
+
+<body onload="testChrome()">
+
+    <div id="spark-login"></div>
+    <div id="main" style="display: none;">
+        <!-- Always shows a header, even in smaller screens. -->
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout__header-row">
+                    <!-- Title -->
+                    <span id="app-title" class="mdl-layout-title">Switch</span>
+                    <!-- Add spacer, to align navigation to the right -->
+                    <div class="mdl-layout-spacer"></div>
+                    <!-- Navigation. We hide it in small screens. -->
+                    <nav class="mdl-navigation mdl-layout--large-screen-only">
+                        <a class="mdl-navigation__link" href="https://dashboard.particle.io/user/logs">Dashboard</a>
+                        <a class="mdl-navigation__link" href="https://build.particle.io/build/">Build</a>
+                        <a class="mdl-navigation__link" href="https://build.phonegap.com/apps/1659111/share">Android (APK)</a>
+                    </nav>
+                </div>
+            </header>
+            <div id="drawer" class="mdl-layout__drawer">
+                <span id="app-title2" class="mdl-layout-title">Select switch</span>
+                <nav id="device-list" class="mdl-navigation">
+                    <!--a class="mdl-navigation__link" href="">Link</a-->
+                </nav>
+            </div>
+            <main class="mdl-layout__content">
+                <div class="page-content">
+                    <!-- Square card -->
+                    <div class="demo-card-square mdl-card">
+                        <div class="mdl-card__supporting-text">
+                            <div id="switch">
+                                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="on-off-switch">
+                                    <input type="checkbox" id="on-off-switch" class="mdl-switch__input" onchange="Switch(this)" />
+                                    <span class="mdl-switch__label">Light switch</span>
+                                </label>
+                            </div>
+                            <div id="data">
+                                <div><span class="label">RELATIVE HUMIDITY:</span> <b><span id="RH"></span>%</b>
+                                    <br /><span class="label">TEMPERATURE:</span> <b><span id="TEMP"></span>&deg;C</b></div>
+                            </div>
+                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="update()">Refresh</a>
+                        </div>
+                        <div id="debug" class="mdl-card__actions mdl-card--border">
+                            Open the console to see actual output.
+                            <br /> (Windows: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd>)
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        /* spark.login({
+                    username: USER,
+                    password: PASSWORD
+                });
+                spark.on('login', function () {
+        */
+        sparkLogin(function () {
+
+            document.getElementById("spark-login").style.visibility = "hidden";
+            document.getElementById("spark-login").style.display = "none";
+            document.getElementById("main").style.display = "inline";
+            // fill in fields
+            if (COREID != "1234567890") {
+                update();
+                getState();
+            }
+            console.log("I've just logged in. Now I'll try to subscribe to all events.");
+
+            // list all found devices
+            var devicesPr = spark.listDevices();
+
+            devicesPr.then(
+                function (devices) {
+                    console.log('Devices: ', devices);
+
+                    for (t = 0; t < devices.length; t++) {
+                        var device = devices[t];
+                        console.log(device.id + " " + device.name + " " + device.connected);
+                        //if (device.connected == true) {
+
+                        var myList = document.getElementById("device-list");
+                        var newItem = document.createElement("span");
+                        newItem.innerHTML = device.name;
+                        /* var icon = document.createElement("i");
+                        icon.setAttribute("class", "material-icons");
+                        icon.innerHTML = "memory";
+                        newItem.insertBefore(icon, newItem.childNodes[0]);*/
+                        newItem.setAttribute("id", device.id);
+                        newItem.setAttribute("class", "mdl-navigation__link");
+                        if (device.connected == false) {
+                            newItem.setAttribute("style", "color:#C0C0C0");
+                        }
+                        // newItem.setAttribute("href", "");
+                        newItem.setAttribute("onClick", "setDevice(this)");
+                        //while (newItem.firstChild) {
+                        myList.appendChild(newItem);
+                        //}
+                        //}
+                    }
+                    if (devices.length = 0) {
+                        document.getElementById("app-title").setAttribute("style", "margin-left: -50px");
+                        document.getElementById("app-title2").setAttribute("style", "margin-left: -50px");
+                        document.getElementById("drawer-button")
+                        Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer-button'), function (testElement) {
+                            testElement.setAttribute("style", "display: none");
+                        });
+                        COREID = devices[0].id;
+                    } else {
+                        Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer'), function (testElement) {
+                            testElement.className += " is-visible";
+                        })
+                    };
+                },
+                function (err) {
+                    console.log('List devices call failed: ', err);
+                });
+            /*
+        //Get all events
+        spark.getEventStream(false, false, function(data) {
+        console.log("Event: " + JSON.stringify(data));
+        });
+*/
+
+            //Get your devices events
+            spark.getEventStream(false, 'mine', function (data) {
+                console.log("Event: " + JSON.stringify(data));
+                var t = JSON.parse(JSON.stringify(data));
+                if (t['coreid'] == COREID) {
+                    if (t['name'] == "humidity") {
+                        document.getElementById("RH").innerHTML = t['data'];
+                    }
+                    if (t['name'] == "temperature") {
+                        document.getElementById("TEMP").innerHTML = t['data'];
+                    }
+                    if (t['name'] == "switch") {
+                        getState();
+                    }
+                };
+            });
+            /*
+            //Get "test" event for specific core
+            spark.getEventStream('test', CORE_ID, function (data) {
+                console.log("Event: " + JSON.stringify(data));
+            });
+*/
+
+            /*            spark.getDevice(COREID, function (err, device) {
+                            if (err) {
+                                console.log('An error occurred:', err);
+                            } else {
+                                console.log('Device name: ' + device.name);
+                            }
+                        });*/
+        });
+
+        // Login
+        // use with spark.on('login', function() { ... });
+        //spark.login({ username: 'user@domain.com', password: '******'});
+        //spark.login({ accessToken: '012345' });
+    </script>
+    <script type="text/javascript">
+        function switchOn() {
+            spark.callFunction(COREID, 'Switch', 'ON', function (err, data) {
+                if (err) {
+                    console.log('An error occurred:', err);
+                } else {
+                    console.log('Result:', JSON.parse(JSON.stringify(data))['return_value']);
+                }
+            });
+            console.log("ON button clicked");
+        }
+
+        function switchOff() {
+            spark.callFunction(COREID, 'Switch', 'OFF', function (err, data) {
+                if (err) {
+                    console.log('An error occurred:', err);
+                } else {
+                    console.log('Result:', JSON.parse(JSON.stringify(data))['return_value']);
+                }
+            });
+            console.log("OFF button clicked");
+        }
+
+        function Switch(element) {
+            element.checked ? switchOn() : switchOff();
+        }
+
+        function setDevice(element) {
+            // alert(element.id);
+            COREID = element.id;
+            document.getElementById("drawer").className = "mdl-layout__drawer"; // use += to append class to existing class(es)
+            update();
+            getState();
+        }
+
+        function update() {
+            spark.getVariable(COREID, 'temperature', function (err, data) {
+                if (err) {
+                    console.log('An error occurred while getting variable:', err);
+                } else {
+                    console.log('Varible retrieved successfully:', data);
+                    document.getElementById("TEMP").innerHTML = JSON.parse(JSON.stringify(data))['result'];
+                }
+            });
+            spark.getVariable(COREID, 'humidity', function (err, data) {
+                if (err) {
+                    console.log('An error occurred while getting variable:', err);
+                } else {
+                    console.log('Varible retrieved successfully:', data);
+                    document.getElementById("RH").innerHTML = JSON.parse(JSON.stringify(data))['result'];
+                }
+            });
+            getState();
+        }
+
+        function getState() {
+            spark.callFunction(COREID, 'Status', '', function (err, data) {
+                if (err) {
+                    console.log('An error occurred:', err);
+                    // likely no switch
+                    document.getElementById("switch").style.display = "none";
+                } else {
+                    document.getElementById("switch").style.display = "inline-block";
+                    if (JSON.parse(JSON.stringify(data))['return_value'] == 0) {
+                        if (document.getElementById("on-off-switch").checked == true) {
+                            document.getElementById("on-off-switch").click();
+                        }
+                        console.log('Pin LOW');
+                    }
+                    if (JSON.parse(JSON.stringify(data))['return_value'] == 1) {
+                        if (document.getElementById("on-off-switch").checked == false) {
+                            document.getElementById("on-off-switch").click();
+                        }
+                        console.log('Pin HIGH');
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>
