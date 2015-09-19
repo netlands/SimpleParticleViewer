@@ -20,8 +20,8 @@
             overflow-y: hidden;
         }
         
-        button#spark-login-button.spark-login-button {
-            background: #46B6AC;
+        button#spark-login-button {
+            background: rgb(0, 188, 212);
             position: absolute;
             top: 10%;
             left: 50%;
@@ -32,8 +32,24 @@
             background: darkgray;
         }
         
-        form#spark-login-form.spark-login-modal.current {
-            background: #46B6AC;
+        form#spark-login-form {
+            background: rgb(0, 188, 212);
+            box-shadow: 0 0 0px #000;
+        }
+        
+        .spark-login-modal {
+            font-family: Roboto;
+        }
+        
+        .spark-login-error {
+            background-color: #f2dede;
+            background-image: none;
+            border: 0px;
+            border-radius: 0px;
+        }
+        
+        .spark-login-input {
+            font-family: Roboto;
         }
         
         kbd {
@@ -59,14 +75,33 @@
         }
         
         #data {
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        
+        #data .item {
+            margin-bottom: 5px;
+            display: inline-block;
+            margin-right: 15px;
+        }
+        
+        #data .label {
+            color: rgba(0, 0, 0, .54);
+            font-size: 12px;
+            line-height: 14px;
+        }
+        
+        #data .value {
+            font-weight: bold;
+            color: rgba(0, 0, 0, .54);
+            font-size: 24px;
+            line-height: 26px;
         }
     </style>
 
     <script type="text/javascript">
         var USER = "name@domain.com";
-        var PASSWORD = "xxxxxxxxx";
+        var PASSWORD = "xxxxxxxxxx";
         var COREID = "1234567890";
 
         function testChrome() {
@@ -84,6 +119,7 @@
                 document.getElementById("debug").style.display = "none";
             }
             document.getElementById("spark-login-button").click();
+            document.getElementById("spark-login-form").style.top = "149px";
         }
     </script>
 </head>
@@ -109,7 +145,7 @@
                 </div>
             </header>
             <div id="drawer" class="mdl-layout__drawer">
-                <span id="app-title2" class="mdl-layout-title">Select switch</span>
+                <span class="mdl-layout-title">Select switch</span>
                 <nav id="device-list" class="mdl-navigation">
                     <!--a class="mdl-navigation__link" href="">Link</a-->
                 </nav>
@@ -126,14 +162,25 @@
                                 </label>
                             </div>
                             <div id="data">
-                                <div><span class="label">RELATIVE HUMIDITY:</span> <b><span id="RH"></span>%</b>
-                                    <br /><span class="label">TEMPERATURE:</span> <b><span id="TEMP"></span>&deg;C</b></div>
+                                <div class="item">
+                                    <span class="label">TEMP.</span>
+                                    <br />
+                                    <span class="value"><span id="TEMP"></span>&deg;C</span>
+                                </div>
+                                <div class="item">
+                                    <span class="label">HUMIDITY</span>
+                                    <br />
+                                    <span class="value"><span id="RH"></span>%</span>
+                                </div>
+                                <br />
+                                <br />
+                                <div>
+                                    <a class="mdl-button mdl-js-button mdl-button--primary" onclick="update()">Update</a>
+                                </div>
                             </div>
-                            <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" onclick="update()">Refresh</a>
-                        </div>
-                        <div id="debug" class="mdl-card__actions mdl-card--border">
-                            Open the console to see actual output.
-                            <br /> (Windows: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd>)
+                            <div id="debug" class="mdl-card__actions mdl-card--border">
+                                View console: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -143,14 +190,16 @@
     </div>
 
     <script type="text/javascript">
-        /* spark.login({
-                    username: USER,
-                    password: PASSWORD
-                });
-                spark.on('login', function () {
-        */
+        /*
+                                                                                                            spark.login({
+                                                                                                                username: USER,
+                                                                                                                password: PASSWORD
+                                                                                                            });
+                                                                                                            spark.on('login', function () {
+                                                                                                                                        */
         sparkLogin(function () {
 
+            console.log("Login successful");
             document.getElementById("spark-login").style.visibility = "hidden";
             document.getElementById("spark-login").style.display = "none";
             document.getElementById("main").style.display = "inline";
@@ -159,7 +208,6 @@
                 update();
                 getState();
             }
-            console.log("I've just logged in. Now I'll try to subscribe to all events.");
 
             // list all found devices
             var devicesPr = spark.listDevices();
@@ -192,15 +240,17 @@
                         //}
                         //}
                     }
-                    if (devices.length = 0) {
+
+                    if (devices.length == 1) {
+                        // hide device selection drawer
                         document.getElementById("app-title").setAttribute("style", "margin-left: -50px");
-                        document.getElementById("app-title2").setAttribute("style", "margin-left: -50px");
                         document.getElementById("drawer-button")
                         Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer-button'), function (testElement) {
                             testElement.setAttribute("style", "display: none");
                         });
                         COREID = devices[0].id;
                     } else {
+                        // display device selection drawer on start
                         Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer'), function (testElement) {
                             testElement.className += " is-visible";
                         })
@@ -209,12 +259,14 @@
                 function (err) {
                     console.log('List devices call failed: ', err);
                 });
+
+            console.log("Try to subscribe to events.");
             /*
-        //Get all events
-        spark.getEventStream(false, false, function(data) {
-        console.log("Event: " + JSON.stringify(data));
-        });
-*/
+                    //Get all events
+                    spark.getEventStream(false, false, function(data) {
+                    console.log("Event: " + JSON.stringify(data));
+                    });
+            */
 
             //Get your devices events
             spark.getEventStream(false, 'mine', function (data) {
@@ -237,15 +289,16 @@
             spark.getEventStream('test', CORE_ID, function (data) {
                 console.log("Event: " + JSON.stringify(data));
             });
-*/
-
-            /*            spark.getDevice(COREID, function (err, device) {
+            */
+            /*
+                        spark.getDevice(COREID, function (err, device) {
                             if (err) {
                                 console.log('An error occurred:', err);
                             } else {
                                 console.log('Device name: ' + device.name);
                             }
-                        });*/
+                        });
+            */
         });
 
         // Login
