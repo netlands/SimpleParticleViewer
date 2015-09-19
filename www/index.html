@@ -97,6 +97,12 @@
             font-size: 24px;
             line-height: 26px;
         }
+        
+        .demo-card-square.mdl-card {
+            width: auto;
+            min-width: 240px;
+            max-width: 330px;
+        }
     </style>
 
     <script type="text/javascript">
@@ -174,7 +180,7 @@
                                 </div>
                                 <br />
                                 <br />
-                                <div>
+                                <div style="text-align: right">
                                     <a class="mdl-button mdl-js-button mdl-button--primary" onclick="update()">Update</a>
                                 </div>
                             </div>
@@ -191,12 +197,12 @@
 
     <script type="text/javascript">
         /*
-                                                                                                            spark.login({
-                                                                                                                username: USER,
-                                                                                                                password: PASSWORD
-                                                                                                            });
-                                                                                                            spark.on('login', function () {
-                                                                                                                                        */
+                                        spark.login({
+                                            username: USER,
+                                            password: PASSWORD
+                                            });
+                                            spark.on('login', function () {
+                                                                                                          */
         sparkLogin(function () {
 
             console.log("Login successful");
@@ -249,6 +255,9 @@
                             testElement.setAttribute("style", "display: none");
                         });
                         COREID = devices[0].id;
+                        document.getElementById("app-title").innerHTML = capitalize(devices[0].name);
+                        update();
+                        getState();
                     } else {
                         // display device selection drawer on start
                         Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer'), function (testElement) {
@@ -336,9 +345,9 @@
         function setDevice(element) {
             // alert(element.id);
             COREID = element.id;
+            document.getElementById("app-title").innerHTML = capitalize(element.innerHTML);
             document.getElementById("drawer").className = "mdl-layout__drawer"; // use += to append class to existing class(es)
             update();
-            getState();
         }
 
         function update() {
@@ -359,6 +368,10 @@
                 }
             });
             getState();
+        }
+
+        function capitalize(s) {
+            return s[0].toUpperCase() + s.substr(1);
         }
 
         function getState() {
