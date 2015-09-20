@@ -192,6 +192,17 @@
                                 </div>
                                 <br />
                                 <br />
+
+        <script>
+        function color() {
+            if (StatusBar.isVisible) {StatusBar.backgroundColorByHexString("#FF0000");}
+        }
+        </script>
+
+        <button onclick="StatusBar.hide();">hide</button>
+        <button onclick="StatusBar.show();">show</button>
+        <button onclick="color();">color</button>
+
                                 <div style="text-align: right">
                                     <a class="mdl-button mdl-js-button mdl-button--primary" onclick="update()">Update</a>
                                 </div>
@@ -204,7 +215,6 @@
                 </div>
             </main>
         </div>
-
     </div>
 
     <script type="text/javascript">
