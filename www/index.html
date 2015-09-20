@@ -14,7 +14,7 @@
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css" />
-	<script src="statusbar.js"></script>
+    <!-- script src="statusbar.js"></script -->
     <style>
         body {
             font-family: Roboto;
@@ -118,7 +118,7 @@
             function onDeviceReady() {
                 console.log(StatusBar);
                 if (cordova.platformId == 'android') {
-                    StatusBar.backgroundColorByHexString("#00A9BF");
+                    // StatusBar.backgroundColorByHexString("#00A9BF");
                     // main: #00BCD4", darker: #00A9BF
                 }
             }
@@ -193,16 +193,6 @@
                                 </div>
                                 <br />
                                 <br />
-
-        <script>
-        function color() {
-            if (StatusBar.isVisible) {StatusBar.backgroundColorByHexString("#FF0000");}
-        }
-        </script>
-
-        <button onclick="StatusBar.hide();">hide</button>
-        <button onclick="StatusBar.show();">show</button>
-        <button onclick="color();">color</button>
 
                                 <div style="text-align: right">
                                     <a class="mdl-button mdl-js-button mdl-button--primary" onclick="update()">Update</a>
