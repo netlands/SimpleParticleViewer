@@ -111,6 +111,17 @@
         var COREID = "1234567890";
 
         function testChrome() {
+
+            document.addEventListener("deviceready", onDeviceReady, false);
+
+            function onDeviceReady() {
+                console.log(StatusBar);
+                if (cordova.platformId == 'android') {
+                    StatusBar.backgroundColorByHexString("#00A9BF");
+                    // main: #00BCD4", darker: #00A9BF
+                }
+            }
+
             // please note,
             // that IE11 now returns undefined again for window.chrome
             // and new Opera 30 outputs true for window.chrome
@@ -120,6 +131,7 @@
                 isOpera = window.navigator.userAgent.indexOf("OPR") > -1;
             if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false) {
                 // is Google chrome
+                document.getElementById("debug").style.display = "block";
             } else {
                 // not Google chrome
                 document.getElementById("debug").style.display = "none";
@@ -184,7 +196,7 @@
                                     <a class="mdl-button mdl-js-button mdl-button--primary" onclick="update()">Update</a>
                                 </div>
                             </div>
-                            <div id="debug" class="mdl-card__actions mdl-card--border">
+                            <div id="debug" class="mdl-card__actions mdl-card--border" style="display:none">
                                 View console: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd>
                             </div>
                         </div>
@@ -197,12 +209,12 @@
 
     <script type="text/javascript">
         /*
-                                        spark.login({
-                                            username: USER,
-                                            password: PASSWORD
-                                            });
-                                            spark.on('login', function () {
-                                                                                                          */
+                                                spark.login({
+                                                    username: USER,
+                                                    password: PASSWORD
+                                                    });
+                                                    spark.on('login', function () {
+                                                                                                                  */
         sparkLogin(function () {
 
             console.log("Login successful");
@@ -355,7 +367,7 @@
                 if (err) {
                     console.log('An error occurred while getting variable:', err);
                 } else {
-                    console.log('Varible retrieved successfully:', data);
+                    console.log('Variable retrieved successfully:', data);
                     document.getElementById("TEMP").innerHTML = JSON.parse(JSON.stringify(data))['result'];
                 }
             });
@@ -363,7 +375,7 @@
                 if (err) {
                     console.log('An error occurred while getting variable:', err);
                 } else {
-                    console.log('Varible retrieved successfully:', data);
+                    console.log('Variable retrieved successfully:', data);
                     document.getElementById("RH").innerHTML = JSON.parse(JSON.stringify(data))['result'];
                 }
             });
