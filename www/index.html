@@ -15,6 +15,13 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css" />
     <!-- script src="statusbar.js"></script -->
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <!-- for export only -->
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <!-- csv, xls support -->
+    <script src="http://highslide-software.github.io/export-csv/export-csv.js"></script>
+
     <style>
         body {
             font-family: Roboto;
@@ -95,14 +102,16 @@
         #data .value {
             font-weight: bold;
             color: rgba(0, 0, 0, .54);
-            font-size: 24px;
-            line-height: 26px;
+            font-size: 34px;
+            /* 24px */
+            line-height: 36px;
+            /* 26px */
         }
         
         .demo-card-square.mdl-card {
             width: auto;
             min-width: 240px;
-            max-width: 330px;
+            /* max-width: 330px; */
         }
     </style>
 
@@ -133,9 +142,11 @@
             if (isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false) {
                 // is Google chrome
                 document.getElementById("debug").style.display = "block";
+
             } else {
                 // not Google chrome
-                document.getElementById("debug").style.display = "none";
+                // document.getElementById("debug").style.display = "none";
+                document.getElementById("debug-text").innerHTML = ""
             }
             document.getElementById("spark-login-button").click();
             document.getElementById("spark-login-form").style.top = "149px";
@@ -199,8 +210,147 @@
                                 </div>
                             </div>
                             <div id="debug" class="mdl-card__actions mdl-card--border" style="display:none">
-                                View console: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd>
+                                <span id="debug-text">View console: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd></span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div id="graph-content" class="demo-card-square mdl-card">
+                        <div class="mdl-card__supporting-text">
+                            <script type="text/javascript">
+                                var series;
+                                var update_interval = 10;
+
+                                var time = (new Date()).getTime();
+                                var temp;
+
+                                $(document).ready(function () {
+                                    Highcharts.setOptions({
+                                        global: {
+                                            useUTC: false
+                                        }
+                                    });
+
+                                    $('#graph').highcharts({
+                                        chart: {
+                                            type: 'spline',
+                                            animation: Highcharts.svg,
+                                            marginRight: 60,
+
+                                            events: {
+                                                load: function () {
+                                                    series_dhtTempF = this.series[0];
+                                                    // series_dhtHumidity = this.series[1];
+
+                                                    setInterval(function () {
+                                                        var time = (new Date()).getTime();
+                                                        spark.getVariable(COREID, 'temperature', function (err, data) {
+                                                            if (err) {
+                                                                console.log('An error occurred while getting variable:', err);
+                                                            } else {
+                                                                console.log('Variable retrieved successfully:', data);
+                                                                series_dhtTempF.addPoint([time, temp], true, false);
+                                                                // series_dhtTempF.addPoint([time, Math.round(parseFloat(JSON.parse(JSON.stringify(data))['result']))], true, false);
+                                                                // set last value to true to have a fixed number of points
+                                                            }
+                                                        });
+                                                        /* spark.getVariable(COREID, 'humidity', function (err, data) {
+                                                            if (err) {
+                                                                console.log('An error occurred while getting variable:', err);
+                                                            } else {
+                                                                console.log('Variable retrieved successfully:', data);
+                                                                series_dhtHumidity.addPoint([time, Math.round(parseFloat(JSON.parse(JSON.stringify(data))['result']))], true, false);
+
+                                                            }
+                                                        }); */
+                                                    }, update_interval * 1000);
+                                                }
+                                            }
+                                        },
+                                        title: {
+                                            text: null
+                                        },
+                                        subtitle: {
+                                            text: null
+                                        },
+                                        xAxis: {
+                                            type: 'datetime',
+                                            tickPixelInterval: 150
+                                        },
+                                        yAxis: [{
+                                                title: {
+                                                    text: null // 'Temp (°C)'
+                                                },
+                                                plotLines: [{
+                                                    value: 0,
+                                                    width: 1,
+                                                    color: '#00BCD4'
+            }]
+                }
+                                            /*,
+                                                                {
+                                                                    title: {
+                                                                        text: 'RH (%)'
+                                                                    },
+                                                                    opposite: true,
+                                                                    plotLines: [{
+                                                                        value: 0,
+                                                                        width: 1,
+                                                                        color: '#808080'
+                                                        }]
+                                                    }*/
+        ],
+
+                                        legend: {
+                                            enabled: false
+                                        },
+                                        series: [{
+                                                name: 'Temperature',
+                                                color: '#00BCD4',
+                                                data: (function () {
+                                                    var data = [],
+                                                        time = (new Date()).getTime(),
+                                                        i;
+
+                                                    for (i = -19; i <= 0; i++) {
+                                                        data.push({
+                                                            x: time + i * 1000,
+                                                            y: null
+                                                        });
+                                                    }
+
+                                                    return data;
+                                                })()
+        }
+                                            /*, {
+                                                                name: 'Humidity',
+                                                                yAxis: 1,
+                                                                color: '#0000FF',
+                                                                data: (function () {
+                                                                    var data = [],
+                                                                        time = (new Date()).getTime(),
+                                                                        i;
+
+                                                                    for (i = -19; i <= 0; i++) {
+                                                                        data.push({
+                                                                            x: time + i * 1000,
+                                                                            y: null
+                                                                        });
+                                                                    }
+
+                                                                    return data;
+                                                                })()
+                                                    }*/
+        ]
+                                    });
+                                });
+
+                                // for export only
+                                $('#getcsv').click(function () {
+                                    alert(chart.getCSV());
+                                });
+                            </script>
+                            <div id="graph" style="width:95%; height:200px; margin: 0 auto;"></div>
                         </div>
                     </div>
                 </div>
@@ -210,12 +360,12 @@
 
     <script type="text/javascript">
         /*
-                                                spark.login({
-                                                    username: USER,
-                                                    password: PASSWORD
-                                                    });
-                                                    spark.on('login', function () {
-                                                                                                                  */
+                                                        spark.login({
+                                                            username: USER,
+                                                            password: PASSWORD
+                                                            });
+                                                            spark.on('login', function () {
+                                                                                                                          */
         sparkLogin(function () {
 
             console.log("Login successful");
@@ -296,10 +446,12 @@
                 var t = JSON.parse(JSON.stringify(data));
                 if (t['coreid'] == COREID) {
                     if (t['name'] == "humidity") {
-                        document.getElementById("RH").innerHTML = t['data'];
+                        document.getElementById("RH").innerHTML = Math.round(t['data']);
                     }
                     if (t['name'] == "temperature") {
-                        document.getElementById("TEMP").innerHTML = t['data'];
+                        document.getElementById("TEMP").innerHTML = Math.round(t['data']); // * 10 ) / 10;
+                        time = (new Date()).getTime();
+                        temp = Math.round(t['data']);
                     }
                     if (t['name'] == "switch") {
                         getState();
@@ -369,7 +521,7 @@
                     console.log('An error occurred while getting variable:', err);
                 } else {
                     console.log('Variable retrieved successfully:', data);
-                    document.getElementById("TEMP").innerHTML = JSON.parse(JSON.stringify(data))['result'];
+                    document.getElementById("TEMP").innerHTML = Math.round(JSON.parse(JSON.stringify(data))['result']); // * 10 ) / 10;
                 }
             });
             spark.getVariable(COREID, 'humidity', function (err, data) {
@@ -377,7 +529,7 @@
                     console.log('An error occurred while getting variable:', err);
                 } else {
                     console.log('Variable retrieved successfully:', data);
-                    document.getElementById("RH").innerHTML = JSON.parse(JSON.stringify(data))['result'];
+                    document.getElementById("RH").innerHTML = Math.round(JSON.parse(JSON.stringify(data))['result']);
                 }
             });
             getState();
