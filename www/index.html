@@ -156,7 +156,7 @@
             } else {
                 // not Google chrome
                 document.getElementById("debug").style.display = "none";
-                document.getElementById("temperature-graph").style.display = "none";
+                // document.getElementById("temperature-graph").style.display = "none";
                 isChrome = false;
             }
             document.getElementById("spark-login-button").click();
@@ -259,7 +259,9 @@
                                                             console.log('An error occurred while getting variable:', err);
                                                         } else {
                                                             console.log('Variable retrieved successfully:', data);
-															if (temp == "") {temp = null};
+                                                            if (temp == "") {
+                                                                temp = null
+                                                            };
                                                             series_dhtTemp.addPoint([time, temp], true, false);
                                                             // series_dhtTemp.addPoint([time, Math.round(parseFloat(JSON.parse(JSON.stringify(data))['result']))], true, false);
                                                             // set last value to true to have a fixed number of points
@@ -372,12 +374,12 @@
 
     <script type="text/javascript">
         /*
-                                                                spark.login({
-                                                                    username: USER,
-                                                                    password: PASSWORD
-                                                                    });
-                                                                    spark.on('login', function () {
-                                                                                                                                  */
+                                                                        spark.login({
+                                                                            username: USER,
+                                                                            password: PASSWORD
+                                                                            });
+                                                                            spark.on('login', function () {
+                                                                                                                                          */
         sparkLogin(function () {
 
             console.log("Login successful");
