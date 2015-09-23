@@ -230,67 +230,48 @@
 
                         <script type="text/javascript">
                             var update_interval = 10;
-
                             var time = (new Date()).getTime();
                             var temp;
 
-                            $(document).ready(function () {
-                                Highcharts.setOptions({
-                                    global: {
-                                        useUTC: false
-                                    }
-                                });
-
-                                $('#graph-container').highcharts({
-                                    chart: {
-                                        type: 'spline',
-                                        animation: Highcharts.svg,
-                                        marginRight: 10,
-
-                                        events: {
-                                            load: function () {
-                                                var series_dhtTemp = this.series[0];
-                                                // var series_dhtHumidity = this.series[1];
-
-                                                setInterval(function () {
-                                                    var time = (new Date()).getTime();
-                                                    spark.getVariable(COREID, 'temperature', function (err, data) {
-                                                        if (err) {
-                                                            console.log('An error occurred while getting variable:', err);
-                                                        } else {
-                                                            console.log('Variable retrieved successfully:', data);
-                                                            if (temp == "") {
-                                                                temp = null
-                                                            };
-                                                            series_dhtTemp.addPoint([time, temp], true, false);
-                                                            // series_dhtTemp.addPoint([time, Math.round(parseFloat(JSON.parse(JSON.stringify(data))['result']))], true, false);
-                                                            // set last value to true to have a fixed number of points
-                                                        }
-                                                    });
-                                                    /* spark.getVariable(COREID, 'humidity', function (err, data) {
-                                                        if (err) {
-                                                            console.log('An error occurred while getting variable:', err);
-                                                        } else {
-                                                            console.log('Variable retrieved successfully:', data);
-                                                            series_dhtHumidity.addPoint([time, Math.round(parseFloat(JSON.parse(JSON.stringify(data))['result']))], true, false);
-
-                                                        }
-                                                    }); */
-                                                }, update_interval * 1000);
-                                            }
+                            $(function () {
+                                $(document).ready(function () {
+                                    Highcharts.setOptions({
+                                        global: {
+                                            useUTC: false // Coordinated Universal Time
                                         }
-                                    },
-                                    title: {
-                                        text: null
-                                    },
-                                    subtitle: {
-                                        text: null
-                                    },
-                                    xAxis: {
-                                        type: 'datetime',
-                                        tickPixelInterval: 150
-                                    },
-                                    yAxis: [{
+                                    });
+
+                                    $('#graph-container').highcharts({
+                                        chart: {
+                                            type: 'spline',
+                                            animation: Highcharts.svg,
+                                            marginRight: 10,
+                                            events: {
+                                                load: function () {
+                                                    var series = this.series[0];
+                                                    setInterval(function () {
+                                                        // check if temp is not empty or undefined
+                                                        if (temp) {
+                                                            // nothing to do
+                                                        } else {
+                                                            temp = null
+                                                        };
+
+                                                        series.addPoint([time, temp], true, false);
+                                                        // set last value to true to have a fixed number of points
+
+                                                    }, update_interval * 1000);
+                                                }
+                                            }
+                                        },
+                                        title: {
+                                            text: null
+                                        },
+                                        xAxis: {
+                                            type: 'datetime',
+                                            tickPixelInterval: 150
+                                        },
+                                        yAxis: {
                                             title: {
                                                 text: null // 'Temp (°C)'
                                             },
@@ -298,66 +279,35 @@
                                                 value: 0,
                                                 width: 1,
                                                 color: '#00BCD4'
-            }]
-                }
-                                            /*,
-                                                                {
-                                                                    title: {
-                                                                        text: 'RH (%)'
-                                                                    },
-                                                                    opposite: true,
-                                                                    plotLines: [{
-                                                                        value: 0,
-                                                                        width: 1,
-                                                                        color: '#808080'
-                                                        }]
-                                                    }*/
-        ],
-
-                                    legend: {
-                                        enabled: false
-                                    },
-                                    series: [{
+        }]
+                                        },
+                                        legend: {
+                                            enabled: false
+                                        },
+                                        exporting: {
+                                            enabled: true
+                                        },
+                                        series: [{
                                             name: 'Temperature',
                                             color: '#00BCD4',
                                             data: (function () {
+                                                // Array of random data
                                                 var data = [],
                                                     time = (new Date()).getTime(),
                                                     i;
 
-                                                for (i = -19; i <= 0; i++) {
+                                                for (i = -19; i <= 0; i += 1) {
                                                     data.push({
                                                         x: time + i * 1000,
                                                         y: null
                                                     });
                                                 }
-
                                                 return data;
-                                            })()
-        }
-                                            /*, {
-                                                                name: 'Humidity',
-                                                                yAxis: 1,
-                                                                color: '#0000FF',
-                                                                data: (function () {
-                                                                    var data = [],
-                                                                        time = (new Date()).getTime(),
-                                                                        i;
-
-                                                                    for (i = -19; i <= 0; i++) {
-                                                                        data.push({
-                                                                            x: time + i * 1000,
-                                                                            y: null
-                                                                        });
-                                                                    }
-
-                                                                    return data;
-                                                                })()
-                                                    }*/
-        ]
+                                            }())
+      }]
+                                    });
                                 });
                             });
-
                             // for export only
                             $('#getcsv').click(function () {
                                 alert(chart.getCSV());
@@ -374,18 +324,21 @@
 
     <script type="text/javascript">
         /*
-                                                                        spark.login({
-                                                                            username: USER,
-                                                                            password: PASSWORD
-                                                                            });
-                                                                            spark.on('login', function () {
-                                                                                                                                          */
+                                                                                                spark.login({
+                                                                                                    username: USER,
+                                                                                                    password: PASSWORD
+                                                                                                    });
+                                                                                                    spark.on('login', function () {
+                                                                                                                                                                  */
         sparkLogin(function () {
 
             console.log("Login successful");
             document.getElementById("spark-login").style.visibility = "hidden";
             document.getElementById("spark-login").style.display = "none";
             document.getElementById("main").style.display = "inline";
+
+            $(window).trigger('resize');
+
             // fill in fields
             if (COREID != "1234567890") {
                 update();
@@ -531,11 +484,15 @@
 
         function update() {
             spark.getVariable(COREID, 'temperature', function (err, data) {
+                time = (new Date()).getTime();
+
                 if (err) {
                     console.log('An error occurred while getting variable:', err);
+                    temp = null;
                 } else {
                     console.log('Variable retrieved successfully:', data);
                     document.getElementById("TEMP").innerHTML = Math.round(JSON.parse(JSON.stringify(data))['result']); // * 10 ) / 10;
+                    temp = Math.round(t['data']);
                 }
             });
             spark.getVariable(COREID, 'humidity', function (err, data) {
