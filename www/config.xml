@@ -63,9 +63,9 @@
     <gap:plugin name="cordova-plugin-whitelist" source="npm" />
 
     <!-- Third party plugins -->
+    <gap:plugin name="org.apache.cordova.statusbar" source="npm" version="0.1.4" />
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
     <!--
-        <gap:plugin name="org.apache.cordova.statusbar" source="npm" />
         <gap:plugin name="phonegap-plugin-barcodescanner" source="npm" version="4.0.2" />
     -->
 
