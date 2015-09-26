@@ -10,7 +10,7 @@
     <script src="http://cdn.jsdelivr.net/sparkjs/0.5.10/spark.min.js" type="text/javascript" charset="utf-8"></script>
     <!-- Material Design Lite -->
     <script src="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.min.js"></script>
-    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.cyan-deep_orange.min.css" />
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.4/material.cyan-pink.min.css" />
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css" />
@@ -137,8 +137,13 @@
             function onDeviceReady() {
                 console.log(StatusBar);
                 if (cordova.platformId == 'android') {
-                    StatusBar.backgroundColorByHexString("#00A9BF");
-                    // main: #00BCD4", darker: #00A9BF
+                    // light: #B2EBF2, main: #00BCD4, darker: #0097A7
+                    StatusBar.backgroundColorByHexString("#0097A7");
+
+                    // avoid reload when back-button is pressed (for for Hydration)
+                    document.addEventListener("backbutton", function (e) {
+                        e.preventDefault();
+                    }, false );
                 }
             }
 

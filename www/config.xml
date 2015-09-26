@@ -38,9 +38,13 @@
     <preference name="disable-cursor"             value="false" />          <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
     <preference name="android-installLocation"    value="auto" />           <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
 
+    <!-- avoid reload in background -->
     <preference name="AndroidLaunchMode" value="singleTask" />
 
-    <preference name="StatusBarBackgroundColor" value="#00A9BF" />
+    <preference name="StatusBarBackgroundColor" value="#0097A7" />
+    <!-- remove menu button -->
+    <preference name="android-minSdkVersion" value="14" />
+    <preference name="android-targetSdkVersion" value="21" />
 
     <preference name="phonegap-version" value="cli-5.2.0" />
 
@@ -86,6 +90,7 @@
     <icon src="res/icon/windows-phone/icon-173.png" gap:platform="winphone"   gap:role="background" />
 
     <!-- Define app splash screen for each platform. -->
+    <!-- gap:splash src="splash.png" / -->
     <gap:splash src="res/screen/android/screen-ldpi-portrait.png"       gap:platform="android" gap:qualifier="port-ldpi" />
     <gap:splash src="res/screen/android/screen-mdpi-portrait.png"       gap:platform="android" gap:qualifier="port-mdpi" />
     <gap:splash src="res/screen/android/screen-hdpi-portrait.png"       gap:platform="android" gap:qualifier="port-hdpi" />
