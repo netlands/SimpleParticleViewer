@@ -14,7 +14,7 @@
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css" />
-    <!-- script src="statusbar.js"></script -->
+    <script src="statusbar.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
     <!-- for export only -->
@@ -137,7 +137,7 @@
             function onDeviceReady() {
                 console.log(StatusBar);
                 if (cordova.platformId == 'android') {
-                    // StatusBar.backgroundColorByHexString("#00A9BF");
+                    StatusBar.backgroundColorByHexString("#00A9BF");
                     // main: #00BCD4", darker: #00A9BF
                 }
             }
