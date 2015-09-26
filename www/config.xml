@@ -39,8 +39,10 @@
     <preference name="android-installLocation"    value="auto" />           <!-- android: app install location. 'auto' will choose. 'internalOnly' is device memory. 'preferExternal' is SDCard. -->
 
     <!-- avoid reload in background -->
-    <preference name="AndroidLaunchMode" value="singleTask" />
-
+    <!-- preference name="AndroidLaunchMode" value="singleTask" / -->
+    <!-- avoid reload on re-open -->
+    <preference name="AndroidLaunchMode" value="singleInstance" />
+	
     <preference name="StatusBarBackgroundColor" value="#0097A7" />
     <!-- remove menu button -->
     <!-- preference name="android-minSdkVersion" value="14" />
