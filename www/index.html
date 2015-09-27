@@ -143,7 +143,7 @@
                     // avoid reload when back-button is pressed (for for Hydration)
                     document.addEventListener("backbutton", function (e) {
                         e.preventDefault();
-                    }, false );
+                    }, false);
                 }
             }
 
@@ -261,7 +261,8 @@
                                                         } else {
                                                             temp = null
                                                         };
-
+                                                        if (temp == -4) {
+                                                            temp = null);
                                                         series.addPoint([time, temp], true, false);
                                                         // set last value to true to have a fixed number of points
 
@@ -293,8 +294,8 @@
                                         exporting: {
                                             enabled: true
                                         },
-                                        credits:{
-                                             enabled:true
+                                        credits: {
+                                            enabled: true
                                         },
                                         series: [{
                                             name: 'Temperature',
