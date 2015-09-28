@@ -4,6 +4,8 @@ The application uses the ParticleJS (Javascript SDK) for communication and contr
 
 The application requires an internet conection. All required code is included in one file or referenced from external links. The application can be opened in a browser, either locally or from a network location (e.g., a DopBox public folder)
 
-Or view it directly from here: http://htmlpreview.github.io/?https://github.com/netlands/SimpleParticleViewer/blob/master/www/index.html (note that depending on development this version might not work as expected).
+Open and edit a stable online version at CodePen: http://codepen.io/netlands/full/zvqZjy
+
+Or open the latest "build" directly from here: https://rawgit.com/netlands/SimpleParticleViewer/master/www/index.html (note that depending on development this version might not work as expected).
 
 Additionally a compiled APK can be found at: https://build.phonegap.com/apps/1659111/share 
