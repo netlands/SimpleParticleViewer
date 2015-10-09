@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Simple Particle viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="http://sstatic.net/stackoverflow/img/favicon.ico">
     <title>Particle Viewer</title>
     <script src="http://cdn.jsdelivr.net/sparkjs/0.5.10/spark.min.js" type="text/javascript" charset="utf-8"></script>
     <!-- Material Design Lite -->
@@ -42,9 +43,14 @@
         button#spark-login-button {
             background: rgb(0, 188, 212);
             position: absolute;
-            top: 10%;
+            top: 0%;
             left: 50%;
-            margin-left: -75px;
+            margin-left: -200px;
+            width: 400px;
+        }
+        
+        #spark-login-form-button {
+            width: 270px
         }
         
         button#spark-login-form-button {
@@ -65,6 +71,7 @@
             background-image: none;
             border: 0px;
             border-radius: 0px;
+            width: 240px;
         }
         
         .spark-login-input {
@@ -121,6 +128,32 @@
             width: auto;
             min-width: 240px;
             /* max-width: 330px; */
+        }
+        
+        .active {
+            animation: blinker 4s linear infinite;
+            color: deepskyblue;
+        }
+        
+        .inactive {
+            color: #C0C0C0;
+        }
+        
+        @keyframes blinker {
+            50% {
+                opacity: 0.0;
+            }
+        }
+        
+        i.material-icons.menu-icon {
+            vertical-align: middle;
+            margin-right: 4px;
+        }
+        
+        i.material-icons.device-icon {
+            vertical-align: middle;
+            margin-right: 8px;
+            font-size: 13px;
         }
     </style>
 
@@ -183,6 +216,17 @@
                     <span id="app-title" class="mdl-layout-title">Switch</span>
                     <!-- Add spacer, to align navigation to the right -->
                     <div class="mdl-layout-spacer"></div>
+                    <!-- Right aligned menu below button -->
+                    <button id="demo-menu-lower-right" class="mdl-button mdl-js-button mdl-button--icon mdl-layout--small-screen-only">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+
+                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+                        <li class="mdl-menu__item" onClick="alert('uh oh!')"><i class="material-icons menu-icon">file_download</i> Download Update</li>
+                        <li class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
+                        <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">save</i> Export Data</li>
+                        <li class="mdl-menu__item"><i class="material-icons menu-icon">exit_to_app</i> Exit</li>
+                    </ul>
                     <!-- Navigation. We hide it in small screens. -->
                     <nav class="mdl-navigation mdl-layout--large-screen-only">
                         <a class="mdl-navigation__link" href="https://dashboard.particle.io/user/logs">Dashboard</a>
@@ -239,90 +283,115 @@
                             var time = (new Date()).getTime();
                             var temp;
 
+                            function drawDefaultChart() {
+                                chart = new Highcharts.Chart(defaultOptions);
+                            }
+
+
                             $(function () {
+
                                 $(document).ready(function () {
-                                    Highcharts.setOptions({
-                                        global: {
-                                            useUTC: false // Coordinated Universal Time
-                                        }
-                                    });
 
-                                    $('#graph-container').highcharts({
-                                        chart: {
-                                            type: 'spline',
-                                            animation: Highcharts.svg,
-                                            marginRight: 10,
-                                            events: {
-                                                load: function () {
-                                                    var series = this.series[0];
-                                                    setInterval(function () {
-                                                        // check if temp is not empty or undefined
-                                                        if (temp) {
-                                                            // nothing to do
-                                                        } else {
-                                                            temp = null
-                                                        };
-                                                        if (temp == -4) {
-                                                            (temp = null)};
-                                                        series.addPoint([time, temp], true, false);
-                                                        // set last value to true to have a fixed number of points
+                                    drawDefaultChart();
 
-                                                    }, update_interval * 1000);
-                                                }
-                                            }
-                                        },
-                                        title: {
-                                            text: null
-                                        },
-                                        xAxis: {
-                                            type: 'datetime',
-                                            tickPixelInterval: 150
-                                        },
-                                        yAxis: {
-                                            title: {
-                                                text: null // 'Temp (°C)'
-                                            },
-                                            tickInterval: 1,
-                                            plotLines: [{
-                                                value: 0,
-                                                width: 1,
-                                                color: '#00BCD4'
-        }]
-                                        },
-                                        legend: {
-                                            enabled: false
-                                        },
-                                        exporting: {
-                                            enabled: true
-                                        },
-                                        credits: {
-                                            enabled: true
-                                        },
-                                        series: [{
-                                            name: 'Temperature',
-                                            color: '#00BCD4',
-                                            data: (function () {
-                                                // Array of random data
-                                                var data = [],
-                                                    time = (new Date()).getTime(),
-                                                    i;
-
-                                                for (i = -19; i <= 0; i += 1) {
-                                                    data.push({
-                                                        x: time + i * 1000,
-                                                        y: null
-                                                    });
-                                                }
-                                                return data;
-                                            }())
-      }]
-                                    });
                                 });
                             });
+
+                            var chart = null,
+                                defaultOptions = {
+
+                                    chart: {
+                                        renderTo: 'graph-container',
+                                        type: 'spline',
+                                        animation: Highcharts.svg,
+                                        marginRight: 10,
+                                        events: {
+                                            load: function () {
+
+                                                var series = this.series[0];
+                                                setInterval(function () {
+
+                                                    var time = (new Date()).getTime();
+                                                    spark.getVariable(COREID, 'temperature', function (err, data) {
+                                                        if (err) {
+                                                            console.log('An error occurred while getting variable:', err);
+                                                        } else {
+                                                            console.log('Variable retrieved successfully:', data);
+                                                            temp = Math.round(JSON.parse(JSON.stringify(data))['result']);
+                                                            if (temp == "") {
+                                                                temp = null
+                                                            };
+                                                            if (temp == -4) {
+                                                                (temp = null)
+                                                            };
+                                                            series.addPoint([time, temp], true, false);
+                                                            // set last value to true to have a fixed number of points
+                                                        }
+                                                    });
+
+                                                }, update_interval * 1000);
+                                            }
+                                        }
+                                    },
+                                    title: {
+                                        text: null
+                                    },
+                                    xAxis: {
+                                        type: 'datetime',
+                                        tickPixelInterval: 150
+                                    },
+                                    yAxis: {
+                                        title: {
+                                            text: null // 'Temp (°C)'
+                                        },
+                                        tickInterval: 1,
+                                        plotLines: [{
+                                            value: 0,
+                                            width: 1,
+                                            color: '#00BCD4'
+        }]
+                                    },
+                                    legend: {
+                                        enabled: false
+                                    },
+                                    exporting: {
+                                        enabled: true
+                                    },
+                                    credits: {
+                                        enabled: true
+                                    },
+                                    series: [{
+                                        name: 'Temperature',
+                                        color: '#00BCD4',
+                                        data: (function () {
+                                            // Array of random data
+                                            var data = [],
+                                                time = (new Date()).getTime(),
+                                                i;
+
+
+
+                                            return data;
+
+
+
+
+
+                                        }())
+      }]
+                                };
                             // for export only
                             $('#getcsv').click(function () {
                                 alert(chart.getCSV());
                             });
+
+                            function splitN(s, n) {
+                                var output = [];
+                                for (var i = 0; i < s.length; i += n) {
+                                    output.push(s.substr(i, n));
+                                }
+                                return (output);
+                            }
                         </script>
 
                         <div id="graph-container" style="width:95%; height:200px; margin: 0 auto;"></div>
@@ -335,12 +404,12 @@
 
     <script type="text/javascript">
         /*
-                                                                                                spark.login({
-                                                                                                    username: USER,
-                                                                                                    password: PASSWORD
-                                                                                                    });
-                                                                                                    spark.on('login', function () {
-                                                                                                                                                                  */
+                                                                                                                        spark.login({
+                                                                                                                            username: USER,
+                                                                                                                            password: PASSWORD
+                                                                                                                            });
+                                                                                                                            spark.on('login', function () {
+                                                                                                                                                                                          */
         sparkLogin(function () {
 
             console.log("Login successful");
@@ -370,19 +439,29 @@
 
                         var myList = document.getElementById("device-list");
                         var newItem = document.createElement("span");
-                        newItem.innerHTML = device.name;
-                        /* var icon = document.createElement("i");
-                        icon.setAttribute("class", "material-icons");
-                        icon.innerHTML = "memory";
-                        newItem.insertBefore(icon, newItem.childNodes[0]);*/
+                        // newItem.innerHTML = device.name;
+                        var icon = document.createElement("i");
+                        if (device.connected == true) {
+                            icon.setAttribute("class", "material-icons active device-icon");
+                        } else {
+                            icon.setAttribute("class", "material-icons device-icon");
+                        }
+                        icon.innerHTML = "brightness_1";
+                        newItem.insertBefore(icon, newItem.childNodes[0]);
                         newItem.setAttribute("id", device.id);
                         newItem.setAttribute("class", "mdl-navigation__link");
                         if (device.connected == false) {
-                            newItem.setAttribute("style", "color:#C0C0C0");
+                            newItem.setAttribute("class", "mdl-navigation__link inactive");
+                        } else {
+                            newItem.setAttribute("class", "mdl-navigation__link");
                         }
                         // newItem.setAttribute("href", "");
                         newItem.setAttribute("onClick", "setDevice(this)");
                         //while (newItem.firstChild) {
+                        var itemName = document.createElement("span");
+                        itemName.setAttribute("class", "name");
+                        itemName.innerHTML = device.name;
+                        newItem.appendChild(itemName);
                         myList.appendChild(newItem);
                         //}
                         //}
@@ -488,8 +567,38 @@
         function setDevice(element) {
             // alert(element.id);
             COREID = element.id;
-            document.getElementById("app-title").innerHTML = capitalize(element.innerHTML);
+            document.getElementById("app-title").innerHTML = capitalize(element.getElementsByClassName("name")[0].innerHTML);
             document.getElementById("drawer").className = "mdl-layout__drawer"; // use += to append class to existing class(es)
+            for (var i = 0; i < chart.series.length; i++) {
+                chart.series[i].setData([]); // chart.series[i].remove();
+            }
+            //chart.destroy();
+            //chart = new Highcharts.Chart(defaultOptions);
+
+            spark.callFunction(COREID, 'getData', '', function (err, data) {
+                if (err) {
+                    console.log('An error occurred:', err);
+                } else {
+                    console.log('Result:', JSON.parse(JSON.stringify(data))['return_value']);
+                    spark.getVariable(COREID, 'history', function (err, data) {
+                        if (err) {
+                            console.log('An error occurred while getting variable:', err);
+                        } else {
+                            console.log('Variable retrieved successfully:', data);
+                            str2 = JSON.parse(JSON.stringify(data))['result']
+                            history2 = splitN(str2, 2);
+                            time = (new Date()).getTime();
+                            for (var i = 0; i < history2.length; i++) {
+                                console.log(history2[i]);
+                                chart.series[0].addPoint([time + i * -10000, parseInt(history2[i])], true, false);
+                            }
+
+                        };
+                    });
+                }
+            });
+
+
             update();
         }
 
