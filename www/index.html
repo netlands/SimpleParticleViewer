@@ -60,6 +60,7 @@
         form#spark-login-form {
             background: rgb(0, 188, 212);
             box-shadow: 0 0 0px #000;
+            padding-left: 64px;
         }
         
         .spark-login-modal {
@@ -124,12 +125,6 @@
             line-height: 36px;
         }
         
-        .demo-card-square.mdl-card {
-            width: auto;
-            min-width: 240px;
-            /* max-width: 330px; */
-        }
-        
         .active {
             animation: blinker 4s linear infinite;
             color: deepskyblue;
@@ -155,6 +150,8 @@
             margin-right: 8px;
             font-size: 13px;
         }
+        
+        @media (max-width:1024px) {}
     </style>
 
     <script type="text/javascript">
@@ -198,15 +195,32 @@
                 // document.getElementById("temperature-graph").style.display = "none";
                 isChrome = false;
             }
-            document.getElementById("spark-login-button").click();
-            document.getElementById("spark-login-form").style.top = "149px";
+            /* document.getElementById("spark-login-button").click();
+            document.getElementById("spark-login-form").style.top = "149px"; */
         }
     </script>
 </head>
 
 <body onload="testChrome()">
 
-    <div id="spark-login"></div>
+    <div style="margin: 20px;" id="spark-login">
+        <form onsubmit="return login()">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="username" pattern="([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|&quot;([]!#-[^-~ \t]|(\\[\t -~]))+&quot;)@[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?(\.[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?)+" />
+                <label class="mdl-textfield__label" for="username">Username</label>
+                <span class="mdl-textfield__error">Enter a valid email address</span>
+            </div>
+            <br />
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="password" id="password" pattern="^(?!\s*$).+" />
+                <label class="mdl-textfield__label" for="password">Password</label>
+                <span class="mdl-textfield__error">Enter a valid password</span>
+            </div>
+
+            <br />
+            <a href="javascript: login()" class="mdl-button mdl-js-button mdl-button--primary mdl-js-ripple-effect">Login to Particle Cloud</a>
+        </form>
+    </div>
     <div id="main" style="display: none;">
         <!-- Always shows a header, even in smaller screens. -->
         <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -222,10 +236,10 @@
                     </button>
 
                     <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
-                        <li class="mdl-menu__item" onClick="alert('uh oh!')"><i class="material-icons menu-icon">file_download</i> Download Update</li>
-                        <li class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
-                        <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">save</i> Export Data</li>
-                        <li class="mdl-menu__item"><i class="material-icons menu-icon">exit_to_app</i> Exit</li>
+                        <li class="mdl-menu__item" onClick="location.reload();location.href='https://build.phonegap.com/apps/1659111/download/android/?qr_key=e8Epd5wjbWhEyePdzdSo'"><i class="material-icons menu-icon">file_download</i> Download Update</li>
+                        <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
+                        <li class="mdl-menu__item" onClick="window.open('data:text/csv;charset=utf-8,' + escape(chart.getCSV()))"><i class="material-icons menu-icon">save</i> Export Data</li>
+                        <li class="mdl-menu__item" onClick="location.reload()"><i class="material-icons menu-icon">exit_to_app</i> Exit</li>
                     </ul>
                     <!-- Navigation. We hide it in small screens. -->
                     <nav class="mdl-navigation mdl-layout--large-screen-only">
@@ -296,10 +310,13 @@
 
                                 });
                             });
-
+                            Highcharts.setOptions({
+                                global: {
+                                    useUTC: false
+                                }
+                            });
                             var chart = null,
                                 defaultOptions = {
-
                                     chart: {
                                         renderTo: 'graph-container',
                                         type: 'spline',
@@ -403,133 +420,139 @@
     </div>
 
     <script type="text/javascript">
-        /*
-                                                                                                                        spark.login({
-                                                                                                                            username: USER,
-                                                                                                                            password: PASSWORD
-                                                                                                                            });
-                                                                                                                            spark.on('login', function () {
-                                                                                                                                                                                          */
-        sparkLogin(function () {
-
-            console.log("Login successful");
-            document.getElementById("spark-login").style.visibility = "hidden";
-            document.getElementById("spark-login").style.display = "none";
-            document.getElementById("main").style.display = "inline";
-
-            $(window).trigger('resize');
-
-            // fill in fields
-            if (COREID != "1234567890") {
-                update();
-                getState();
-            }
-
-            // list all found devices
-            var devicesPr = spark.listDevices();
-
-            devicesPr.then(
-                function (devices) {
-                    console.log('Devices: ', devices);
-
-                    for (t = 0; t < devices.length; t++) {
-                        var device = devices[t];
-                        console.log(device.id + " " + device.name + " " + device.connected);
-                        //if (device.connected == true) {
-
-                        var myList = document.getElementById("device-list");
-                        var newItem = document.createElement("span");
-                        // newItem.innerHTML = device.name;
-                        var icon = document.createElement("i");
-                        if (device.connected == true) {
-                            icon.setAttribute("class", "material-icons active device-icon");
-                        } else {
-                            icon.setAttribute("class", "material-icons device-icon");
-                        }
-                        icon.innerHTML = "brightness_1";
-                        newItem.insertBefore(icon, newItem.childNodes[0]);
-                        newItem.setAttribute("id", device.id);
-                        newItem.setAttribute("class", "mdl-navigation__link");
-                        if (device.connected == false) {
-                            newItem.setAttribute("class", "mdl-navigation__link inactive");
-                        } else {
-                            newItem.setAttribute("class", "mdl-navigation__link");
-                        }
-                        // newItem.setAttribute("href", "");
-                        newItem.setAttribute("onClick", "setDevice(this)");
-                        //while (newItem.firstChild) {
-                        var itemName = document.createElement("span");
-                        itemName.setAttribute("class", "name");
-                        itemName.innerHTML = device.name;
-                        newItem.appendChild(itemName);
-                        myList.appendChild(newItem);
-                        //}
-                        //}
-                    }
-
-                    if (devices.length == 1) {
-                        // hide device selection drawer
-                        document.getElementById("app-title").setAttribute("style", "margin-left: -50px");
-                        document.getElementById("drawer-button")
-                        Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer-button'), function (testElement) {
-                            testElement.setAttribute("style", "display: none");
-                        });
-                        COREID = devices[0].id;
-                        document.getElementById("app-title").innerHTML = capitalize(devices[0].name);
-                        update();
-                        getState();
-                    } else {
-                        // display device selection drawer on start
-                        Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer'), function (testElement) {
-                            testElement.className += " is-visible";
-                        })
-                    };
-                },
-                function (err) {
-                    console.log('List devices call failed: ', err);
-                });
-
-            console.log("Try to subscribe to events.");
-            /*
-                    //Get all events
-                    spark.getEventStream(false, false, function(data) {
-                    console.log("Event: " + JSON.stringify(data));
-                    });
-            */
-
-            //Get your devices events
-            spark.getEventStream(false, 'mine', function (data) {
-                console.log("Event: " + JSON.stringify(data));
-                var t = JSON.parse(JSON.stringify(data));
-                if (t['coreid'] == COREID) {
-                    if (t['name'] == "humidity") {
-                        document.getElementById("RH").innerHTML = Math.round(t['data']);
-                    }
-                    if (t['name'] == "temperature") {
-                        document.getElementById("TEMP").innerHTML = Math.round(t['data']); // * 10 ) / 10;
-                        time = (new Date()).getTime();
-                        temp = Math.round(t['data']);
-                    }
-                    if (t['name'] == "switch") {
-                        getState();
-                    }
-                };
+        function login() {
+            USER = document.getElementById('username').value;
+            PASSWORD = document.getElementById('password').value;
+            spark.login({
+                username: USER,
+                password: PASSWORD
             });
-            /*
-            //Get "test" event for specific core
-            spark.getEventStream('test', CORE_ID, function (data) {
-                console.log("Event: " + JSON.stringify(data));
-            });
-            */
-            /*
-                        spark.getDevice(COREID, function (err, device) {
-                            if (err) {
-                                console.log('An error occurred:', err);
+
+        }
+        //sparkLogin(function () {
+        spark.on('login', function (err, body) {
+            if (err) {
+                console.log('Problem logging in:', err);
+            } else {
+                console.log("Login successful");
+                document.getElementById("spark-login").style.visibility = "hidden";
+                document.getElementById("spark-login").style.display = "none";
+                document.getElementById("main").style.display = "inline";
+
+                $(window).trigger('resize');
+
+                // fill in fields
+                if (COREID != "1234567890") {
+                    update();
+                    getState();
+                }
+
+                // list all found devices
+                var devicesPr = spark.listDevices();
+
+                devicesPr.then(
+                    function (devices) {
+                        console.log('Devices: ', devices);
+
+                        for (t = 0; t < devices.length; t++) {
+                            var device = devices[t];
+                            console.log(device.id + " " + device.name + " " + device.connected);
+                            //if (device.connected == true) {
+
+                            var myList = document.getElementById("device-list");
+                            var newItem = document.createElement("span");
+                            // newItem.innerHTML = device.name;
+                            var icon = document.createElement("i");
+                            if (device.connected == true) {
+                                icon.setAttribute("class", "material-icons active device-icon");
                             } else {
-                                console.log('Device name: ' + device.name);
+                                icon.setAttribute("class", "material-icons device-icon");
                             }
+                            icon.innerHTML = "brightness_1";
+                            newItem.insertBefore(icon, newItem.childNodes[0]);
+                            newItem.setAttribute("id", device.id);
+                            newItem.setAttribute("class", "mdl-navigation__link");
+                            if (device.connected == false) {
+                                newItem.setAttribute("class", "mdl-navigation__link inactive");
+                            } else {
+                                newItem.setAttribute("class", "mdl-navigation__link");
+                            }
+                            // newItem.setAttribute("href", "");
+                            newItem.setAttribute("onClick", "setDevice(this)");
+                            //while (newItem.firstChild) {
+                            var itemName = document.createElement("span");
+                            itemName.setAttribute("class", "name");
+                            itemName.innerHTML = device.name;
+                            newItem.appendChild(itemName);
+                            myList.appendChild(newItem);
+                            //}
+                            //}
+                        }
+
+                        if (devices.length == 1) {
+                            // hide device selection drawer
+                            document.getElementById("app-title").setAttribute("style", "margin-left: -50px");
+                            document.getElementById("drawer-button")
+                            Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer-button'), function (testElement) {
+                                testElement.setAttribute("style", "display: none");
+                            });
+                            COREID = devices[0].id;
+                            document.getElementById("app-title").innerHTML = capitalize(devices[0].name);
+                            update();
+                            getState();
+                        } else {
+                            // display device selection drawer on start
+                            Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer'), function (testElement) {
+                                testElement.className += " is-visible";
+                            })
+                        };
+                    },
+                    function (err) {
+                        console.log('List devices call failed: ', err);
+                    });
+
+                console.log("Try to subscribe to events.");
+                /*
+                        //Get all events
+                        spark.getEventStream(false, false, function(data) {
+                        console.log("Event: " + JSON.stringify(data));
                         });
-            */
+                */
+
+                //Get your devices events
+                spark.getEventStream(false, 'mine', function (data) {
+                    console.log("Event: " + JSON.stringify(data));
+                    var t = JSON.parse(JSON.stringify(data));
+                    if (t['coreid'] == COREID) {
+                        if (t['name'] == "humidity") {
+                            document.getElementById("RH").innerHTML = Math.round(t['data']);
+                        }
+                        if (t['name'] == "temperature") {
+                            document.getElementById("TEMP").innerHTML = Math.round(t['data']); // * 10 ) / 10;
+                            time = (new Date()).getTime();
+                            temp = Math.round(t['data']);
+                        }
+                        if (t['name'] == "switch") {
+                            getState();
+                        }
+                    };
+                });
+                /*
+                //Get "test" event for specific core
+                spark.getEventStream('test', CORE_ID, function (data) {
+                    console.log("Event: " + JSON.stringify(data));
+                });
+                */
+                /*
+                            spark.getDevice(COREID, function (err, device) {
+                                if (err) {
+                                    console.log('An error occurred:', err);
+                                } else {
+                                    console.log('Device name: ' + device.name);
+                                }
+                            });
+                */
+            }
         });
 
         // Login
