@@ -614,7 +614,7 @@
                         } else {
                             console.log('Variable retrieved successfully:', data);
                             str2 = JSON.parse(JSON.stringify(data))['result']
-                            history2 = splitN(str2, 2);
+                            history2 = splitN(str2, 4);
                             time = (new Date()).getTime();
                             for (var i = 0; i < history2.length; i++) {
                                 console.log(history2[i]);
