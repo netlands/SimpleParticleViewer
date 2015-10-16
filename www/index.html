@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Simple Particle viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" href="http://sstatic.net/stackoverflow/img/favicon.ico">
+	<link rel="shortcut icon" href="https://cdn.particle.io/images/blue-b427b68f.ico" type="image/x-icon">
     <title>Particle Viewer</title>
     <script src="http://cdn.jsdelivr.net/sparkjs/0.5.10/spark.min.js" type="text/javascript" charset="utf-8"></script>
     <!-- Material Design Lite -->
@@ -78,6 +78,25 @@
         
         .spark-login-input {
             font-family: Roboto;
+        }
+        
+        #spark-login {
+            background-color: white;
+			position: fixed;
+			width: 100%;
+			height: 100%;
+			left: 0;
+			top: 0;
+			padding: 20px;
+        }
+        
+        .mdl-layout__content {
+            background-color: white;
+        }
+        
+        body {
+            background-color: rgb(0, 188, 212);
+            margin-top: 0px;
         }
         
         kbd {
@@ -177,7 +196,7 @@
                     // light: #B2EBF2, main: #00BCD4, darker: #0097A7
                     StatusBar.backgroundColorByHexString("#0097A7");
 
-                    // avoid reload when back-button is pressed (for for Hydration)
+                    // avoid reload when back-button is pressed
                     document.addEventListener("backbutton", function (e) {
                         e.preventDefault();
                     }, false);
@@ -213,7 +232,7 @@
 
 <body onload="testChrome()">
 
-    <div style="margin: 20px;" id="spark-login">
+    <div id="spark-login">
         <form onsubmit="return login()">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="username" pattern="([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|&quot;([]!#-[^-~ \t]|(\\[\t -~]))+&quot;)@[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?(\.[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?)+" />
