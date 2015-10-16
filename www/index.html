@@ -80,13 +80,13 @@
             font-family: Roboto;
         }
         
-		.ios_statusbar {
+        .ios_statusbar {
             background: rgb(0, 188, 212);
-			height: 20px;
-			width: 100%;
-			display: none;
-		}
-		
+            height: 20px;
+            width: 100%;
+            display: none;
+        }
+        
         kbd {
             padding: .1em .6em;
             border: 1px solid #ccc;
@@ -174,13 +174,13 @@
         var isChrome = false;
 
         function testChrome() {
-var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i))  == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
+            var deviceType = (navigator.userAgent.match(/iPad/i)) == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i)) == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
 
             document.addEventListener("deviceready", onDeviceReady, false);
 
             function onDeviceReady() {
                 console.log(StatusBar);
-				alert(cordova.platformId);
+                alert(cordova.platformId);
                 if (cordova.platformId == 'android') {
                     // light: #B2EBF2, main: #00BCD4, darker: #0097A7
                     StatusBar.backgroundColorByHexString("#0097A7");
@@ -190,10 +190,11 @@ var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (nav
                         e.preventDefault();
                     }, false);
                 }
-				if (cordova.platformId == 'ios') {
-				Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer-button'), function (testElement) {
-                                testElement.setAttribute("style", "display: none");
-								}
+                if (cordova.platformId == 'ios') {
+                    Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__drawer-button'), function (testElement) {
+                        testElement.setAttribute("style", "display: inline");
+                    });
+                }
             }
 
             // please note,
@@ -241,7 +242,7 @@ var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (nav
     </div>
     <div id="main" style="display: none;">
         <div class="ios_statusbar"></div>
-		<!-- Always shows a header, even in smaller screens. -->
+        <!-- Always shows a header, even in smaller screens. -->
         <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
             <header class="mdl-layout__header">
                 <div class="mdl-layout__header-row">
@@ -612,13 +613,13 @@ var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (nav
             document.getElementById("app-title").innerHTML = capitalize(element.getElementsByClassName("name")[0].innerHTML);
             document.getElementById("drawer").className = "mdl-layout__drawer"; // use += to append class to existing class(es)
             // for iOS app only
-			// if (deviceType == "iPhone") {
-			if (cordova.platformId == 'ios') {
-			Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__obfuscator'), function (testElement) {
-    testElement.setAttribute("style", "display: none");
-                            });
-								}
-			for (var i = 0; i < chart.series.length; i++) {
+            // if (deviceType == "iPhone") {
+            if (cordova.platformId == 'ios') {
+                Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__obfuscator'), function (testElement) {
+                    testElement.setAttribute("style", "display: none");
+                });
+            }
+            for (var i = 0; i < chart.series.length; i++) {
                 chart.series[i].setData([]); // chart.series[i].remove();
             }
             //chart.destroy();
