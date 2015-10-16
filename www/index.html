@@ -167,6 +167,7 @@
         var isChrome = false;
 
         function testChrome() {
+var deviceType = (navigator.userAgent.match(/iPad/i))  == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i))  == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
 
             document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -597,7 +598,14 @@
             COREID = element.id;
             document.getElementById("app-title").innerHTML = capitalize(element.getElementsByClassName("name")[0].innerHTML);
             document.getElementById("drawer").className = "mdl-layout__drawer"; // use += to append class to existing class(es)
-            for (var i = 0; i < chart.series.length; i++) {
+            // for iOS app only
+			// if (deviceType == "iPhone") {
+			if (cordova.platformId == 'ios') {
+			Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__obfuscator'), function (testElement) {
+    testElement.setAttribute("style", "display: none");
+                            });
+								}
+			for (var i = 0; i < chart.series.length; i++) {
                 chart.series[i].setData([]); // chart.series[i].remove();
             }
             //chart.destroy();
