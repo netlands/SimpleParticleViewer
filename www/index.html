@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="Simple Particle viewer">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="shortcut icon" href="https://cdn.particle.io/images/blue-b427b68f.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="https://cdn.particle.io/images/blue-b427b68f.ico" type="image/x-icon">
     <title>Particle Viewer</title>
     <script src="http://cdn.jsdelivr.net/sparkjs/0.5.10/spark.min.js" type="text/javascript" charset="utf-8"></script>
     <!-- Material Design Lite -->
@@ -82,12 +82,12 @@
         
         #spark-login {
             background-color: white;
-			position: fixed;
-			width: 100%;
-			height: 100%;
-			left: 0;
-			top: 0;
-			padding: 20px;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            padding: 20px;
         }
         
         .mdl-layout__content {
@@ -185,6 +185,8 @@
 
         var isChrome = false;
 
+        var _platformId = "browser";
+
         function testChrome() {
             var deviceType = (navigator.userAgent.match(/iPad/i)) == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i)) == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
 
@@ -193,6 +195,7 @@
             function onDeviceReady() {
                 console.log(StatusBar);
                 if (cordova.platformId == 'android') {
+                    _platformId = "android";
                     // light: #B2EBF2, main: #00BCD4, darker: #0097A7
                     StatusBar.backgroundColorByHexString("#0097A7");
 
@@ -202,8 +205,40 @@
                     }, false);
                 }
                 if (cordova.platformId == 'ios') {
+                    _platformId = "ios";
                     document.body.style.marginTop = "20px";
                     StatusBar.backgroundColorByHexString("#00BCD4");
+                }
+
+                // Mock device.platform property if not available
+                if (!window.device) {
+                    window.device = {
+                        platform: 'Browser'
+                    };
+                }
+
+                handleExternalURLs();
+
+            }
+
+            function handleExternalURLs() {
+                // Handle click events for all external URLs
+                if (device.platform.toUpperCase() === 'ANDROID') {
+                    $(document).on('click', 'a[href^="http"]', function (e) {
+                        var url = $(this).attr('href');
+                        navigator.app.loadUrl(url, {
+                            openExternal: true
+                        });
+                        e.preventDefault();
+                    });
+                } else if (device.platform.toUpperCase() === 'IOS') {
+                    $(document).on('click', 'a[href^="http"]', function (e) {
+                        var url = $(this).attr('href');
+                        window.open(url, '_system');
+                        e.preventDefault();
+                    });
+                } else {
+                    // Leave standard behaviour
                 }
             }
 
@@ -265,7 +300,8 @@
                     </button>
 
                     <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
-                        <li class="mdl-menu__item" onClick="location.reload();location.href='https://build.phonegap.com/apps/1659111/download/android/?qr_key=e8Epd5wjbWhEyePdzdSo'"><i class="material-icons menu-icon">file_download</i> Download Update</li>
+                        <!-- li class="mdl-menu__item" onClick="location.reload();location.href='https://build.phonegap.com/apps/1659111/download/android'"-->
+                        <li class="mdl-menu__item" onClick="getUpdate()"><i class="material-icons menu-icon">file_download</i> Download Update</li>
                         <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
                         <li class="mdl-menu__item" onClick="location.reload()"><i class="material-icons menu-icon">exit_to_app</i> Logout</li>
                         <li class="mdl-menu__item" onClick="navigator.app.exitApp()"><i class="material-icons menu-icon">power_settings_new</i> Exit</li>
@@ -590,6 +626,20 @@
         //spark.login({ accessToken: '012345' });
     </script>
     <script type="text/javascript">
+        function getUpdate() {
+            if (_platformId.toUpperCase() === 'IOS') {
+                var url = "https://build.phonegap.com/apps/1659111/download/ios";
+                window.open(url, '_system');
+            } else if (_platformId.toUpperCase() === 'ANDROID') {
+                var url = "https://build.phonegap.com/apps/1659111/download/android";
+                window.open(url);
+            } else {
+                var url = "https://build.phonegap.com/apps/1659111/share";
+                window.open(url);
+            }
+        }
+
+
         function switchOn() {
             spark.callFunction(COREID, 'Switch', 'ON', function (err, data) {
                 if (err) {
@@ -622,9 +672,9 @@
             document.getElementById("app-title").innerHTML = capitalize(element.getElementsByClassName("name")[0].innerHTML);
             document.getElementById("drawer").className = "mdl-layout__drawer"; // use += to append class to existing class(es)
             // for iOS app only
-            if (cordova.platformId == 'ios') {
+            if (_platformId == 'ios') {
                 Array.prototype.filter.call(document.getElementsByClassName('mdl-layout__obfuscator'), function (testElement) {
-                    testElement.setAttribute("style", "display: none");
+                    testElement.setAttribute("style", "visibility: hidden");
                 });
             }
             for (var i = 0; i < chart.series.length; i++) {
