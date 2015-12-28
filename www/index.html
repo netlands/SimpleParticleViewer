@@ -241,7 +241,7 @@
 
             function handleExternalURLs() {
                 // Handle click events for all external URLs
-                if (device.platform.toUpperCase() === 'xANDROID') {
+                if (device.platform.toUpperCase() === 'ANDROID') {
                     $(document).on('click', 'a[href^="http"]', function (e) {
                         var url = $(this).attr('href');
                         navigator.app.loadUrl(url, {
