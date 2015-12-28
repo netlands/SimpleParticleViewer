@@ -188,6 +188,24 @@
         var _platformId = "browser";
 
         function testChrome() {
+		
+			// check for login info
+			if (localStorage.getItem("username") === null) {
+			  // no user info found
+			  // show login
+			  document.getElementById("spark-login").style.display = "inline";
+			} else {
+			
+			    USER = localStorage.getItem("username");
+				PASSWORD = localStorage.getItem("password");
+				spark.login({
+					username: USER,
+					password: PASSWORD
+				});
+			
+			}
+		
+		
             var deviceType = (navigator.userAgent.match(/iPad/i)) == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i)) == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
 
             document.addEventListener("deviceready", onDeviceReady, false);
@@ -266,8 +284,7 @@
 </head>
 
 <body onload="testChrome()">
-
-    <div id="spark-login">
+    <div id="spark-login" style="display: none;">
         <form onsubmit="return login()">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="username" pattern="([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|&quot;([]!#-[^-~ \t]|(\\[\t -~]))+&quot;)@[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?(\.[0-9A-Za-z]([0-9A-Za-z-]{0,61}[0-9A-Za-z])?)+" />
@@ -303,7 +320,7 @@
                         <!-- li class="mdl-menu__item" onClick="location.reload();location.href='https://build.phonegap.com/apps/1659111/download/android'"-->
                         <li class="mdl-menu__item" onClick="getUpdate()"><i class="material-icons menu-icon">file_download</i> Download Update</li>
                         <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
-                        <li class="mdl-menu__item" onClick="location.reload()"><i class="material-icons menu-icon">exit_to_app</i> Logout</li>
+                        <li class="mdl-menu__item" onClick="logout()"><i class="material-icons menu-icon">exit_to_app</i> Logout</li>
                         <li class="mdl-menu__item" onClick="navigator.app.exitApp()"><i class="material-icons menu-icon">power_settings_new</i> Exit</li>
                     </ul>
                     <!-- Navigation. We hide it in small screens. -->
@@ -485,6 +502,8 @@
     </div>
 
     <script type="text/javascript">
+	
+	
         function login() {
             USER = document.getElementById('username').value;
             PASSWORD = document.getElementById('password').value;
@@ -492,18 +511,30 @@
                 username: USER,
                 password: PASSWORD
             });
-
         }
+		
+		function logout() {
+			// clear user info
+			localStorage.removeItem("username");
+			localStorage.removeItem("password");
+			location.reload();
+		}
+		
         //sparkLogin(function () {
         spark.on('login', function (err, body) {
             if (err) {
                 console.log('Problem logging in:', err);
             } else {
                 console.log("Login successful");
+				
                 document.getElementById("spark-login").style.visibility = "hidden";
                 document.getElementById("spark-login").style.display = "none";
                 document.getElementById("main").style.display = "inline";
 
+				// store user info
+				localStorage.setItem("username", USER);
+				localStorage.setItem("password", PASSWORD);
+				
                 $(window).trigger('resize');
 
                 // fill in fields
