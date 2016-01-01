@@ -209,7 +209,13 @@
             var deviceType = (navigator.userAgent.match(/iPad/i)) == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i)) == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
 
             document.addEventListener("deviceready", onDeviceReady, false);
+			document.addEventListener("resume", onResume, false);
 
+			function onResume() {
+				// Handle the resume event
+				update();
+			}
+			
             function onDeviceReady() {
                 console.log(StatusBar);
                 if (cordova.platformId == 'android') {
@@ -369,8 +375,8 @@
                         <div id="debug" class="mdl-card__actions mdl-card--border" style="display:none">
                             <span id="debug-text">View console: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd></span>
                         </div>
-<button onclick="window.plugins.insomnia.keepAwake()">keep awake</button>
-<button onclick="window.plugins.insomnia.allowSleepAgain()">allow sleep again</button>
+<!--button onclick="window.plugins.insomnia.keepAwake()">keep awake</button>
+<button onclick="window.plugins.insomnia.allowSleepAgain()">allow sleep again</button-->
                     </div>
 
                     <div id="temperature-graph" class="content-box">
