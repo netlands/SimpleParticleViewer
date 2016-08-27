@@ -326,6 +326,7 @@
                         <!-- li class="mdl-menu__item" onClick="location.reload();location.href='https://build.phonegap.com/apps/1659111/download/android'"-->
                         <li class="mdl-menu__item" onClick="getUpdate()"><i class="material-icons menu-icon">file_download</i> Download Update</li>
                         <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
+                        <li class="mdl-menu__item" onClick="window.plugins.insomnia.keepAwake()"><i id="sleep_menu" class="material-icons menu-icon">check_box_outline_blank</i> Keep Awake</li>
                         <li class="mdl-menu__item" onClick="logout()"><i class="material-icons menu-icon">exit_to_app</i> Logout</li>
                         <li class="mdl-menu__item" onClick="navigator.app.exitApp()"><i class="material-icons menu-icon">power_settings_new</i> Exit</li>
                     </ul>
@@ -375,8 +376,6 @@
                         <div id="debug" class="mdl-card__actions mdl-card--border" style="display:none">
                             <span id="debug-text">View console: <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>J</kbd></span>
                         </div>
-<button onclick="window.plugins.insomnia.keepAwake()">keep awake</button>
-<button onclick="window.plugins.insomnia.allowSleepAgain()">allow sleep again</button>
                     </div>
 
                     <div id="temperature-graph" class="content-box">
