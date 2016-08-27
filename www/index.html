@@ -382,7 +382,7 @@
                     <div id="temperature-graph" class="content-box">
 
                         <script type="text/javascript">
-                            var update_interval = 10;
+                            var update_interval = 30;
                             var time = (new Date()).getTime();
                             var temp;
 
@@ -736,7 +736,7 @@
                             time = (new Date()).getTime();
                             for (var i = 0; i < history2.length; i++) {
                                 console.log(history2[i]);
-                                chart.series[0].addPoint([time + i * -10000, parseInt(history2[i])], true, false);
+                                chart.series[0].addPoint([time + ((history2.length - i) * -30000), parseInt(history2[i])], true, false);
                             }
 
                         };
