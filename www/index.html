@@ -286,6 +286,22 @@
             /* document.getElementById("spark-login-button").click();
             document.getElementById("spark-login-form").style.top = "149px"; */
         }
+        
+        var insomnia = false;
+        
+        function toggleKeepAwake() {
+            if (insomnia) {
+                insomnia = false;
+                window.plugins.insomnia.allowSleepAgain();
+                document.getElementById("sleep_checkbox").innerHTML = "check_box";
+            } else {
+                insomnia = true;
+                window.plugins.insomnia.keepAwake();
+                document.getElementById("sleep_checkbox").innerHTML = "check_box_outline_blank";
+            }
+        }
+                
+
     </script>
 </head>
 
@@ -326,7 +342,7 @@
                         <!-- li class="mdl-menu__item" onClick="location.reload();location.href='https://build.phonegap.com/apps/1659111/download/android'"-->
                         <li class="mdl-menu__item" onClick="getUpdate()"><i class="material-icons menu-icon">file_download</i> Download Update</li>
                         <li disabled class="mdl-menu__item"><i class="material-icons menu-icon">vpn_key</i> Add Key</li>
-                        <li class="mdl-menu__item" onClick="window.plugins.insomnia.keepAwake()"><i id="sleep_menu" class="material-icons menu-icon">check_box_outline_blank</i> Keep Awake</li>
+                        <li class="mdl-menu__item" onClick="toggleKeepAwake()"><i id="sleep_checkbox" class="material-icons menu-icon">check_box_outline_blank</i> Keep Awake</li>
                         <li class="mdl-menu__item" onClick="logout()"><i class="material-icons menu-icon">exit_to_app</i> Logout</li>
                         <li class="mdl-menu__item" onClick="navigator.app.exitApp()"><i class="material-icons menu-icon">power_settings_new</i> Exit</li>
                     </ul>
