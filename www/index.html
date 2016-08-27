@@ -290,14 +290,14 @@
         var insomnia = false;
         
         function toggleKeepAwake() {
-            if (insomnia) {
+            if (insomnia == true) {
                 insomnia = false;
                 window.plugins.insomnia.allowSleepAgain();
-                document.getElementById("sleep_checkbox").innerHTML = "check_box";
+                document.getElementById("sleep_checkbox").innerHTML = "check_box_outline_blank";
             } else {
                 insomnia = true;
                 window.plugins.insomnia.keepAwake();
-                document.getElementById("sleep_checkbox").innerHTML = "check_box_outline_blank";
+                document.getElementById("sleep_checkbox").innerHTML = "check_box";
             }
         }
                 
