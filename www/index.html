@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
@@ -188,34 +188,34 @@
         var _platformId = "browser";
 
         function testChrome() {
-		
-			// check for login info
-			if (localStorage.getItem("username") === null) {
-			  // no user info found
-			  // show login
-			  document.getElementById("spark-login").style.display = "inline";
-			} else {
-			
-			    USER = localStorage.getItem("username");
-				PASSWORD = localStorage.getItem("password");
-				spark.login({
-					username: USER,
-					password: PASSWORD
-				});
-			
-			}
-		
-		
+
+            // check for login info
+            if (localStorage.getItem("username") === null) {
+                // no user info found
+                // show login
+                document.getElementById("spark-login").style.display = "inline";
+            } else {
+
+                USER = localStorage.getItem("username");
+                PASSWORD = localStorage.getItem("password");
+                spark.login({
+                    username: USER,
+                    password: PASSWORD
+                });
+
+            }
+
+
             var deviceType = (navigator.userAgent.match(/iPad/i)) == "iPad" ? "iPad" : (navigator.userAgent.match(/iPhone/i)) == "iPhone" ? "iPhone" : (navigator.userAgent.match(/Android/i)) == "Android" ? "Android" : "null";
 
             document.addEventListener("deviceready", onDeviceReady, false);
-			document.addEventListener("resume", onResume, false);
+            document.addEventListener("resume", onResume, false);
 
-			function onResume() {
-				// Handle the resume event
-				update();
-			}
-			
+            function onResume() {
+                // Handle the resume event
+                update();
+            }
+
             function onDeviceReady() {
                 console.log(StatusBar);
                 if (cordova.platformId == 'android') {
@@ -286,9 +286,9 @@
             /* document.getElementById("spark-login-button").click();
             document.getElementById("spark-login-form").style.top = "149px"; */
         }
-        
+
         var insomnia = false;
-        
+
         function toggleKeepAwake() {
             if (insomnia == true) {
                 insomnia = false;
@@ -300,8 +300,6 @@
                 document.getElementById("sleep_checkbox").innerHTML = "check_box";
             }
         }
-                
-
     </script>
 </head>
 
@@ -524,8 +522,6 @@
     </div>
 
     <script type="text/javascript">
-	
-	
         function login() {
             USER = document.getElementById('username').value;
             PASSWORD = document.getElementById('password').value;
@@ -534,29 +530,29 @@
                 password: PASSWORD
             });
         }
-		
-		function logout() {
-			// clear user info
-			localStorage.removeItem("username");
-			localStorage.removeItem("password");
-			location.reload();
-		}
-		
+
+        function logout() {
+            // clear user info
+            localStorage.removeItem("username");
+            localStorage.removeItem("password");
+            location.reload();
+        }
+
         //sparkLogin(function () {
         spark.on('login', function (err, body) {
             if (err) {
                 console.log('Problem logging in:', err);
             } else {
                 console.log("Login successful");
-				
+
                 document.getElementById("spark-login").style.visibility = "hidden";
                 document.getElementById("spark-login").style.display = "none";
                 document.getElementById("main").style.display = "inline";
 
-				// store user info
-				localStorage.setItem("username", USER);
-				localStorage.setItem("password", PASSWORD);
-				
+                // store user info
+                localStorage.setItem("username", USER);
+                localStorage.setItem("password", PASSWORD);
+
                 $(window).trigger('resize');
 
                 // fill in fields
@@ -736,6 +732,30 @@
             //chart.destroy();
             //chart = new Highcharts.Chart(defaultOptions);
 
+
+            // get interval and last update time
+            time = (new Date()).getTime();
+            interval = 600000; //30000;
+
+            spark.getVariable(COREID, 'lastUpdate', function (err, data) {
+                if (err) {
+                    console.log('An error occurred while getting variable:', err);
+                } else {
+                    console.log('Variable retrieved successfully:', data);
+                    time = (new Date(JSON.parse(JSON.stringify(data))['result'])).getTime();
+                    console.log(time);
+                }
+            });
+            spark.getVariable(COREID, 'interval', function (err, data) {
+                if (err) {
+                    console.log('An error occurred while getting variable:', err);
+                } else {
+                    console.log('Variable retrieved successfully:', data);
+                    interval = JSON.parse(JSON.stringify(data))['result'];
+                    console.log(interval);
+                }
+            });
+
             spark.callFunction(COREID, 'getData', '', function (err, data) {
                 if (err) {
                     console.log('An error occurred:', err);
@@ -748,17 +768,16 @@
                             console.log('Variable retrieved successfully:', data);
                             str2 = JSON.parse(JSON.stringify(data))['result']
                             history2 = splitN(str2, 4);
-                            time = (new Date()).getTime();
+
                             for (var i = 0; i < history2.length; i++) {
                                 console.log(history2[i]);
-                                chart.series[0].addPoint([time + ((history2.length - i) * -30000), parseInt(history2[i])], true, false);
+                                chart.series[0].addPoint([time + ((history2.length - i) * -interval), parseInt(history2[i])], true, false);
                             }
 
                         };
                     });
                 }
             });
-
 
             update();
         }
